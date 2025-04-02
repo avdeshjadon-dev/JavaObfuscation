@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JavaScript Obfuscator with Auto-Load</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap"
+    />
+   <style>:root {
+    --primary-color: #4a6bff;
+    --secondary-color: #2ecc71;
+    --accent-color: #f39c12;
+    --danger-color: #e74c3c;
+    --light-gray: #f8f9fa;
+    --medium-gray: #e9ecef;
+    --dark-gray: #6c757d;
+    --text-color: #2d3436;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --soft-blue: #e3f2fd;
+    --pale-green: #e8f5e9;
+    --light-orange: #fff3e0;
+    --lighter-gray: #f5f7fa;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: "Roboto", sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--lighter-gray);
+  }
+  
+  a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition);
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  header {
+    background-color: white;
+    box-shadow: var(--box-shadow);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .link-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-align: center;
+  }
+  
+  .link-title a {
+    color: var(--text-color);
+  }
+  
+  .main-contents {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+  }
+  
+  footer {
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    background-color: white;
+    border-top: 1px solid var(--medium-gray);
+  }
+  
+  .section {
+    background-color: white;
+    border: 1px solid var(--medium-gray);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .section-title {
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--medium-gray);
+    color: var(--text-color);
+  }
+  
+  .drag-drop-area {
+    border: 2px dashed var(--medium-gray);
+    border-radius: var(--border-radius);
+    padding: 2.5rem 1rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--dark-gray);
+    cursor: pointer;
+    background-color: white;
+    transition: var(--transition);
+  }
+  
+  .drag-drop-area:hover {
+    border-color: var(--primary-color);
+    background-color: var(--soft-blue);
+  }
+  
+  .drag-drop-area.drag-over {
+    border-color: var(--primary-color);
+    background-color: var(--soft-blue);
+  }
+  
+  .parameter-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .parameter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+  }
+  
+  .parameter-row label {
+    min-width: 180px;
+    font-weight: 500;
+    color: var(--text-color);
+  }
+  
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-grow: 1;
+  }
+  
+  select, input {
+    padding: 0.75rem;
+    border: 1px solid var(--medium-gray);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    flex-grow: 1;
+    max-width: 300px;
+    transition: var(--transition);
+  }
+  
+  select:focus, input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.2);
+  }
+  
+  .info-text {
+    font-size: 0.875rem;
+    color: var(--dark-gray);
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
+    margin-left: 180px;
+  }
+  
+  .file-info {
+    background-color: rgba(46, 204, 113, 0.1);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    font-size: 0.9375rem;
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center;
+  }
+  
+  .change-file-btn {
+    background-color: white;
+    border: 1px solid var(--medium-gray);
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    margin-left: 0.75rem;
+    font-size: 0.875rem;
+    transition: var(--transition);
+  }
+  
+  .change-file-btn:hover {
+    background-color: var(--light-gray);
+  }
+  
+  .code-area {
+    margin-bottom: 1.5rem;
+  }
+  
+  textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 1rem;
+    border: 1px solid var(--medium-gray);
+    border-radius: var(--border-radius);
+    font-family: "Consolas", monospace;
+    font-size: 0.9375rem;
+    resize: vertical;
+    margin-bottom: 0.75rem;
+    transition: var(--transition);
+  }
+  
+  textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.2);
+  }
+  
+  .button-area {
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  button:hover {
+    background-color: #3a5bef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  button:active {
+    transform: translateY(0);
+  }
+  
+  button:disabled {
+    background-color: var(--medium-gray);
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  #obfuscate-button {
+    width: 100%;
+    font-weight: 600;
+    padding: 1rem;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 0.75rem;
+  }
+  
+  #run-button {
+    background-color: var(--secondary-color);
+  }
+  
+  #run-button:hover {
+    background-color: #27ae60;
+  }
+  
+  #download-output-button {
+    background-color: var(--accent-color);
+  }
+  
+  #download-output-button:hover {
+    background-color: #e67e22;
+  }
+  
+  fieldset {
+    border: 1px solid var(--medium-gray);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background-color: white;
+    box-shadow: var(--box-shadow);
+  }
+  
+  legend {
+    padding: 0 0.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+  }
+  
+  .fieldset-area {
+    margin-top: 1rem;
+  }
+  
+  .title {
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: var(--text-color);
+  }
+  
+  .checkbox-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .checkbox-area > div {
+    display: flex;
+    align-items: center;
+    min-width: 120px;
+  }
+  
+  input[type="checkbox"] {
+    margin-right: 0.5rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--primary-color);
+  }
+  
+  .input-text {
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+  
+  .input-text input {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .explain {
+    font-size: 0.875rem;
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+  }
+  
+  .explain p {
+    margin-top: 0.25rem;
+    color: var(--dark-gray);
+  }
+  
+  .code-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .length {
+    color: var(--dark-gray);
+    font-size: 0.875rem;
+  }
+  
+  .blacklist-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .blacklist-category {
+    background: white;
+    border: 1px solid var(--medium-gray);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    box-shadow: var(--box-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .blacklist-category:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  .blacklist-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .blacklist-option {
+    align-items: center;
+    min-height: 24px;
+  }
+  
+  .blacklist-option input {
+    margin-right: 0.75rem;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color);
+    position: relative;
+    top: 5px;
+  }
+  
+  .blacklist-option label {
+    font-size: 0.9rem;
+    color: #444;
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  @media (max-width: 900px) {
+    .blacklist-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .main-contents {
+      padding: 0 1rem;
+    }
+  
+    .parameter-row label {
+      min-width: 100%;
+      margin-bottom: 0.5rem;
+    }
+  
+    .info-text {
+      margin-left: 0;
+    }
+  
+    select, input {
+      max-width: 100%;
+    }
+  
+    .action-buttons {
+      flex-direction: column;
+    }
+  
+    .action-buttons button {
+      width: 100%;
+    }
+  }
+  
+  @media (max-width: 500px) {
+    .blacklist-container {
+      grid-template-columns: 1fr;
+    }
+  }</style>
+    <script src="./scripts/js-obfuscator.js"></script>
+    <script src="./scripts/index.js"></script>
+  </head>
+  <body>
+    <!-- [Rest of your HTML content remains exactly the same] -->
+    <header>
+      <div class="link-title">
+        <a href="./">JavaScript Obfuscator with Auto-Load</a>
+      </div>
+    </header>
+    <main>
+      <div class="main-contents">
+        <!-- File Info Section -->
+        <div class="file-info" id="file-info" style="display: none">
+          Loaded file: <span id="loaded-filename"></span>
+          <button class="change-file-btn" id="change-file-btn">
+            Change File
+          </button>
+        </div>
+
+        <!-- Parameter Input Section -->
+        <div class="section parameter-section">
+          <h3 class="section-title">Activation Parameters</h3>
+          <div class="parameter-row">
+            <label for="reg-number">Registration Number:</label>
+            <div class="input-group">
+              <input
+                type="text"
+                id="reg-number"
+                placeholder="12345678"
+                pattern="\d+"
+                required
+              />
+              <span>@neocolab.ai</span>
+            </div>
+          </div>
+          <div class="info-text">
+            Enter only the numeric part of your registration
+          </div>
+
+          <div class="parameter-row">
+            <label for="activation-date">Activation Date:</label>
+            <input type="date" id="activation-date" required />
+          </div>
+
+          <div class="parameter-row">
+            <label for="activation-time">Activation Time:</label>
+            <input type="time" id="activation-time" step="1" required />
+          </div>
+
+          <div class="parameter-row">
+            <label for="duration">Activation Duration:</label>
+            <select id="duration">
+              <option value="2880">2880 minutes (48 hours)</option>
+            </select>
+          </div>
+
+          <button id="script-btn" disabled>Generate Script</button>
+        </div>
+
+        <div class="drag-drop-area" id="drag-drop-area">
+          <div id="drag-drop-text">
+            Loading atozkey.js from current directory...
+          </div>
+        </div>
+        <div class="section code-area">
+          <textarea
+            id="input-code"
+            placeholder="File content will appear here"
+            readonly
+          ></textarea>
+          <div class="code-meta">
+            <div class="length">
+              Length: <span id="input-code-length">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="button-area">
+          <button id="obfuscate-button" disabled>
+            ↓↓↓ Obfuscate Script ↓↓↓
+          </button>
+        </div>
+        <div class="section code-area">
+          <textarea
+            id="output-code"
+            placeholder="Your obfuscated code will appear here"
+          ></textarea>
+          <div class="code-meta">
+            <div class="length">
+              Length: <span id="output-code-length">0</span>
+            </div>
+            <div class="action-buttons">
+              <button id="run-button" disabled>Run obfuscated code</button>
+              <button id="download-output-button" disabled>
+                Download as {reg}.js
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <fieldset>
+          <legend>Option</legend>
+          <div class="fieldset-area">
+            <section>
+              <div class="title">Variable</div>
+              <div class="checkbox-area">
+                <div>
+                  <input type="checkbox" id="option-use-variable" checked />
+                  <label for="option-use-variable">Use variable</label>
+                </div>
+                <div class="input-text">
+                  <div class="explain">
+                    <div>
+                      List to use as a variable name except for '$' and '_'
+                    </div>
+                  </div>
+                  <input
+                    type="text"
+                    id="option-variable-candidates"
+                    placeholder="가나다あいう"
+                    value="가나다あいう"
+                  />
+                </div>
+                <div class="input-text">
+                  <div class="explain">
+                    <div>Iteration count of the random function</div>
+                    <p>
+                      The larger this value, the slower running time, but the
+                      probability to get short code would be increased.
+                    </p>
+                  </div>
+                  <input
+                    type="number"
+                    id="option-iteration-count"
+                    min="1"
+                    placeholder="50"
+                    value="50"
+                  />
+                </div>
+              </div>
+            </section>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Blacklist</legend>
+          <div class="fieldset-area">
+            <div class="blacklist-container">
+              <!-- Basic Characters -->
+              <div class="blacklist-category">
+                <h4>Basic Characters</h4>
+                <div class="blacklist-options">
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-upper-case" checked />
+                    <label for="blacklist-upper-case">A-Z (Upper case)</label>
+                  </div>
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-lower-case" checked />
+                    <label for="blacklist-lower-case">a-z (Lower case)</label>
+                  </div>
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-number" />
+                    <label for="blacklist-number">0-9 (Numbers)</label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Common Symbols -->
+              <div class="blacklist-category">
+                <h4>Common Symbols</h4>
+                <div class="blacklist-options">
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-space" />
+                    <label for="blacklist-space">Space ( )</label>
+                  </div>
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-dollar" />
+                    <label for="blacklist-dollar">Dollar ($)</label>
+                  </div>
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-percent" />
+                    <label for="blacklist-percent">Percent (%)</label>
+                  </div>
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-asterisk" />
+                    <label for="blacklist-asterisk">Asterisk (*)</label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quotes & Dots -->
+              <div class="blacklist-category">
+                <h4>Quotes & Dots</h4>
+                <div class="blacklist-options">
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-single-quotes" />
+                    <label for="blacklist-single-quotes"
+                      >Single quote (')</label
+                    >
+                  </div>
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-double-quotes" />
+                    <label for="blacklist-double-quotes"
+                      >Double quote (")</label
+                    >
+                  </div>
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-backtick" />
+                    <label for="blacklist-backtick">Backtick (`)</label>
+                  </div>
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-dot" />
+                    <label for="blacklist-dot">Dot (.)</label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Brackets & Slashes -->
+              <div class="blacklist-category">
+                <h4>Brackets & Slashes</h4>
+                <div class="blacklist-options">
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-slash" />
+                    <label for="blacklist-slash">Slash (/)</label>
+                  </div>
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-backslash" />
+                    <label for="blacklist-backslash">Backslash (\)</label>
+                  </div>
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-curly-brackets" />
+                    <label for="blacklist-curly-brackets">Curly {}</label>
+                  </div>
+                  <div class="blacklist-option">
+                    <input type="checkbox" id="blacklist-angle-brackets" />
+                    <label for="blacklist-angle-brackets">Angle &lt;&gt;</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </main>
+    <footer>
+      <div class="github-link">
+        GitHub:
+        <a
+          href="https://github.com/avdeshjadon-dev/JavaObfusicator"
+          target="_blank"
+          >https://github.com/avdeshjadon-dev/JavaObfusicator</a
+        >
+      </div>
+      <div class="copyright">
+        &copy; <a href="https://retn0.kr" target="_blank">avdeshjadon</a>. All
+        rights reserved.
+      </div>
+    </footer>
+    <script>
+      // [Previous variable declarations remain the same]
+
+      // Improved function to try auto-loading atozkey.js
+      function tryAutoLoad() {
+        // Show loading status
+        dragDropText.textContent = "Searching for atozkey.js...";
+
+        // Create different ways to try loading the file
+        const tryMethods = [
+          // Method 1: Simple fetch from same directory
+          () =>
+            fetch("atozkey.js").then((response) => {
+              if (response.ok) return response.blob();
+              throw new Error("Not found");
+            }),
+
+          // Method 2: Try with different case (for case-sensitive systems)
+          () =>
+            fetch("atozKey.js").then((response) => {
+              if (response.ok) return response.blob();
+              throw new Error("Not found");
+            }),
+
+          // Method 3: Try with full path if we're in a subdirectory
+          () =>
+            fetch(
+              window.location.pathname.replace(/\/[^\/]*$/, "/atozkey.js")
+            ).then((response) => {
+              if (response.ok) return response.blob();
+              throw new Error("Not found");
+            }),
+        ];
+
+        // Try each method sequentially
+        let lastError = null;
+        const tryNextMethod = (index) => {
+          if (index >= tryMethods.length) {
+            // All methods failed
+            console.log("All auto-load attempts failed:", lastError);
+            dragDropText.textContent =
+              "Drag and drop your atozkey.js file here or click to select";
+            setupManualFileSelection();
+            return;
+          }
+
+          tryMethods[index]()
+            .then((blob) => {
+              const file = new File([blob], "atozkey.js", {
+                type: "application/javascript",
+              });
+              loadFile(file);
+            })
+            .catch((error) => {
+              lastError = error;
+              tryNextMethod(index + 1);
+            });
+        };
+
+        // Start trying methods
+        tryNextMethod(0);
+      }
+
+      // Modified loadFile function to handle errors better
+      function loadFile(file) {
+        const reader = new FileReader();
+
+        reader.onloadstart = function () {
+          dragDropText.textContent = "Loading file...";
+        };
+
+        reader.onload = function (e) {
+          originalFileContent = e.target.result;
+          inputCodeArea.value = originalFileContent;
+          inputCodeLength.textContent = originalFileContent.length;
+          currentFileName = file.name;
+          loadedFilenameSpan.textContent = file.name;
+          fileInfoDiv.style.display = "block";
+          dragDropText.textContent = "File loaded successfully!";
+          updateButtonStates();
+
+          // Auto-scroll to show the loaded content
+          setTimeout(() => {
+            inputCodeArea.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+            });
+          }, 500);
+        };
+
+        reader.onerror = function () {
+          dragDropText.textContent = "Error loading file. Please try again.";
+          console.error("File reading error:", reader.error);
+        };
+
+        reader.readAsText(file);
+      }
+
+      // Global variables
+      let originalFileContent = "";
+      let currentFileName = "atozkey.js";
+      let modifiedContent = "";
+
+      // Set default date to today and time to current time
+      const now = new Date();
+      document.getElementById("activation-date").valueAsDate = now;
+      document.getElementById("activation-time").value = `${now
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+
+      // DOM elements
+      const dragDropArea = document.getElementById("drag-drop-area");
+      const inputCodeArea = document.getElementById("input-code");
+      const inputCodeLength = document.getElementById("input-code-length");
+      const fileInfoDiv = document.getElementById("file-info");
+      const loadedFilenameSpan = document.getElementById("loaded-filename");
+      const dragDropText = document.getElementById("drag-drop-text");
+      const scriptBtn = document.getElementById("script-btn");
+      const obfuscateBtn = document.getElementById("obfuscate-button");
+      const runBtn = document.getElementById("run-button");
+      const downloadBtn = document.getElementById("download-output-button");
+
+      // Function to enable/disable buttons based on state
+      function updateButtonStates() {
+        const hasContent = originalFileContent.length > 0;
+        const hasRegNumber =
+          document.getElementById("reg-number").value.length > 0;
+
+        scriptBtn.disabled = !hasContent || !hasRegNumber;
+        obfuscateBtn.disabled = modifiedContent.length === 0;
+        runBtn.disabled =
+          document.getElementById("output-code").value.length === 0;
+        downloadBtn.disabled =
+          document.getElementById("output-code").value.length === 0;
+      }
+
+      // Function to load file content
+      function loadFile(file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          originalFileContent = e.target.result;
+          inputCodeArea.value = originalFileContent;
+          inputCodeLength.textContent = originalFileContent.length;
+          currentFileName = file.name;
+          loadedFilenameSpan.textContent = file.name;
+          fileInfoDiv.style.display = "block";
+          dragDropText.textContent =
+            "Drag and drop a different file here if needed";
+          updateButtonStates();
+        };
+        reader.onerror = function () {
+          alert("Error reading file");
+        };
+        reader.readAsText(file);
+      }
+
+      // Try to automatically load atozkey.js on page load
+      function tryAutoLoad() {
+        fetch("atozkey.js")
+          .then((response) => {
+            if (response.ok) {
+              return response.blob();
+            }
+            throw new Error("File not found");
+          })
+          .then((blob) => {
+            const file = new File([blob], "atozkey.js", {
+              type: "application/javascript",
+            });
+            loadFile(file);
+          })
+          .catch((error) => {
+            console.log("Auto-load failed:", error.message);
+            dragDropText.textContent =
+              "Drag and drop your atozkey.js file here or click to select";
+            setupManualFileSelection();
+          });
+      }
+
+      // Setup manual file selection
+      function setupManualFileSelection() {
+        dragDropArea.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          dragDropArea.classList.add("drag-over");
+        });
+
+        dragDropArea.addEventListener("dragleave", () => {
+          dragDropArea.classList.remove("drag-over");
+        });
+
+        dragDropArea.addEventListener("drop", (event) => {
+          event.preventDefault();
+          dragDropArea.classList.remove("drag-over");
+
+          const file = event.dataTransfer.files[0];
+          if (
+            file &&
+            (file.type === "application/javascript" ||
+              file.name.endsWith(".js"))
+          ) {
+            loadFile(file);
+          } else {
+            alert("Please drop a valid JavaScript file (.js).");
+          }
+        });
+
+        dragDropArea.addEventListener("click", () => {
+          const fileInput = document.createElement("input");
+          fileInput.type = "file";
+          fileInput.accept = ".js";
+          fileInput.onchange = (event) => {
+            const file = event.target.files[0];
+            if (
+              file &&
+              (file.type === "application/javascript" ||
+                file.name.endsWith(".js"))
+            ) {
+              loadFile(file);
+            } else {
+              alert("Please select a valid JavaScript file (.js).");
+            }
+          };
+          fileInput.click();
+        });
+      }
+
+      // Change file button handler
+      document
+        .getElementById("change-file-btn")
+        .addEventListener("click", () => {
+          const fileInput = document.createElement("input");
+          fileInput.type = "file";
+          fileInput.accept = ".js";
+          fileInput.onchange = (event) => {
+            const file = event.target.files[0];
+            if (
+              file &&
+              (file.type === "application/javascript" ||
+                file.name.endsWith(".js"))
+            ) {
+              loadFile(file);
+            } else {
+              alert("Please select a valid JavaScript file (.js).");
+            }
+          };
+          fileInput.click();
+        });
+
+      // Generate Script button handler
+      scriptBtn.addEventListener("click", () => {
+        const regNumber = document.getElementById("reg-number").value;
+        const activationDate = document.getElementById("activation-date").value;
+        const activationTime = document.getElementById("activation-time").value;
+        const duration = document.getElementById("duration").value;
+
+        if (!regNumber || !activationDate || !activationTime) {
+          alert("Please fill in all parameters.");
+          return;
+        }
+
+        // Format the date and time
+        const dateParts = activationDate.split("-");
+        const timeParts = activationTime.split(":");
+        const formattedDateTime = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}T${timeParts[0]}:${timeParts[1]}:00`;
+
+        // Process the original file content
+        modifiedContent = originalFileContent;
+
+        // Replace the parameters in the code
+        modifiedContent = modifiedContent.replace(
+          /"2025-04-02T03:00:00"/g,
+          `"${formattedDateTime}"`
+        );
+
+        modifiedContent = modifiedContent.replace(
+          /"1200 minutes"/g,
+          `"${duration} minutes"`
+        );
+
+        modifiedContent = modifiedContent.replace(
+          /"12317943@neocolab\.ai"/g,
+          `"${regNumber}@neocolab.ai"`
+        );
+
+        // Update the input field with modified content
+        inputCodeArea.value = modifiedContent;
+        inputCodeLength.textContent = modifiedContent.length;
+
+        // Enable obfuscate button
+        obfuscateBtn.disabled = false;
+      });
+
+      // Obfuscate button handler
+      obfuscateBtn.addEventListener("click", () => {
+        try {
+          const obfuscatedCode = obfuscate(modifiedContent);
+          document.getElementById("output-code").value = obfuscatedCode;
+          document.getElementById("output-code-length").textContent =
+            obfuscatedCode.length;
+
+          // Enable run and download buttons
+          runBtn.disabled = false;
+          downloadBtn.disabled = false;
+
+          // Update download button text with registration number
+          const regNumber = document.getElementById("reg-number").value;
+          downloadBtn.textContent = `Download as ${regNumber}.js`;
+
+          // Auto-scroll to the output
+          document
+            .getElementById("output-code")
+            .scrollIntoView({ behavior: "smooth" });
+        } catch (error) {
+          console.error("Obfuscation error:", error);
+          alert(
+            "Error during obfuscation. Please check the console for details."
+          );
+        }
+      });
+
+      // Download button handler
+      downloadBtn.addEventListener("click", () => {
+        const outputText = document.getElementById("output-code").value;
+        if (!outputText) {
+          alert(
+            "No obfuscated code to download. Please process the file first."
+          );
+          return;
+        }
+
+        const regNumber = document.getElementById("reg-number").value;
+        const filename = `${regNumber}.js`;
+
+        downloadTextAsFile(filename, outputText);
+      });
+
+      function downloadTextAsFile(filename, text) {
+        const element = document.createElement("a");
+        element.setAttribute(
+          "href",
+          "data:text/javascript;charset=utf-8," + encodeURIComponent(text)
+        );
+        element.setAttribute("download", filename);
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+      }
+
+      // Run button handler
+      runBtn.addEventListener("click", () => {
+        try {
+          eval(document.getElementById("output-code").value);
+        } catch (error) {
+          console.error("Error running code:", error);
+          alert("Error running code. Check console for details.");
+        }
+      });
+
+      // Input validation for registration number
+      document
+        .getElementById("reg-number")
+        .addEventListener("input", function (e) {
+          this.value = this.value.replace(/[^\d]/g, "");
+          updateButtonStates();
+        });
+
+      // Update button states when other fields change
+      document
+        .getElementById("activation-date")
+        .addEventListener("change", updateButtonStates);
+      document
+        .getElementById("activation-time")
+        .addEventListener("change", updateButtonStates);
+
+      // Initialize the page
+      tryAutoLoad();
+    </script>
+  </body>
+</html>

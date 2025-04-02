@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Obfuscator with Drag and Drop</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap">
+    <style>
+        /* Base Styles */
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #fbbc05;
+            --danger-color: #ea4335;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #757575;
+            --text-color: #333;
+            --border-radius: 6px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f9f9f9;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Layout */
+        header {
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .link-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .link-title a {
+            color: var(--text-color);
+        }
+
+        .main-contents {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            background-color: white;
+            border-top: 1px solid var(--medium-gray);
+        }
+
+        /* Drag & Drop Area */
+        .drag-drop-area {
+            border: 2px dashed var(--medium-gray);
+            border-radius: var(--border-radius);
+            padding: 2.5rem 1rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--dark-gray);
+            cursor: pointer;
+            background-color: white;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
+
+        .drag-drop-area:hover {
+            border-color: var(--primary-color);
+        }
+
+        .drag-drop-area.drag-over {
+            border-color: var(--primary-color);
+            background-color: rgba(66, 133, 244, 0.05);
+        }
+
+        /* Code Areas */
+        .code-area {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-family: 'Consolas', monospace;
+            font-size: 0.9375rem;
+            resize: vertical;
+            margin-bottom: 0.75rem;
+            transition: var(--transition);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        /* Button Styles */
+        .button-area {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:hover {
+            background-color: #3367d6;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background-color: var(--medium-gray);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #obfuscate-button {
+            width: 100%;
+            font-weight: 600;
+            padding: 1rem;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 0.75rem;
+        }
+
+        #run-button {
+            background-color: var(--secondary-color);
+        }
+
+        #run-button:hover {
+            background-color: #2d9249;
+        }
+
+        #download-output-button {
+            background-color: var(--accent-color);
+        }
+
+        #download-output-button:hover {
+            background-color: #e6ac00;
+        }
+
+        /* Code Meta Info */
+        .code-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .length {
+            color: var(--dark-gray);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .main-contents {
+                padding: 0 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons button {
+                width: 100%;
+            }
+        }
+    </style>
+    <script src="./scripts/js-obfuscator.js"></script>
+    <script src="./scripts/index.js"></script>
+</head>
+<body>
+    <header>
+        <div class="link-title">
+            <a href="./">JavaScript Obfuscator</a>
+        </div>
+    </header>
+    <main>
+        <div class="main-contents">
+            <div class="drag-drop-area" id="drag-drop-area">
+                Drag and drop your JavaScript file here or click to upload
+            </div>
+            <div class="code-area">
+                <textarea id="input-code" placeholder="Input JavaScript code"></textarea>
+                <div class="code-meta">
+                    <div class="length">Length: <span id="input-code-length">0</span></div>
+                </div>
+            </div>
+            <div class="button-area">
+                <button id="obfuscate-button">↓↓↓ Obfuscate ↓↓↓</button>
+            </div>
+            <div class="code-area">
+                <textarea id="output-code" placeholder="Your obfuscated code will appear here"></textarea>
+                <div class="code-meta">
+                    <div class="length">Length: <span id="output-code-length">0</span></div>
+                    <div class="action-buttons">
+                        <button id="run-button">Run obfuscated code</button>
+                        <button id="download-output-button">Download Output as .txt</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="github-link">GitHub: <a href="https://github.com/avdeshjadon-dev/JavaObfusicator" target="_blank">https://github.com/avdeshjadon-dev/JavaObfusicator</a></div>
+        <div class="copyright">&copy; <a href="https://retn0.kr" target="_blank">avdeshjadon</a>. All rights reserved.</div>
+    </footer>
+    <script>
+        const dragDropArea = document.getElementById('drag-drop-area');
+        const inputCodeArea = document.getElementById('input-code');
+        const inputCodeLength = document.getElementById('input-code-length');
+
+        dragDropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dragDropArea.classList.add('drag-over');
+        });
+
+        dragDropArea.addEventListener('dragleave', () => {
+            dragDropArea.classList.remove('drag-over');
+        });
+
+        dragDropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dragDropArea.classList.remove('drag-over');
+
+            const file = event.dataTransfer.files[0];
+            if (file && file.type === 'application/javascript') {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    inputCodeArea.value = reader.result;
+                    inputCodeLength.textContent = reader.result.length;
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Please drop a valid JavaScript file.');
+            }
+        });
+
+        dragDropArea.addEventListener('click', () => {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.js';
+            fileInput.onchange = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        inputCodeArea.value = reader.result;
+                        inputCodeLength.textContent = reader.result.length;
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            fileInput.click();
+        });
+
+        document.getElementById('download-output-button').addEventListener('click', () => {
+            const outputText = document.getElementById('output-code').value;
+            downloadTextAndRefresh('output-code.txt', outputText);
+        });
+
+        function downloadTextAndRefresh(filename, text) {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            location.reload();
+        }
+    </script>
+</body>
+</html>
