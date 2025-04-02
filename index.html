@@ -456,7 +456,6 @@
     <script src="./scripts/index.js"></script>
   </head>
   <body>
-    <!-- [Rest of your HTML content remains exactly the same] -->
     <header>
       <div class="link-title">
         <a href="./">JavaScript Obfuscator with Auto-Load</a>
@@ -464,7 +463,6 @@
     </header>
     <main>
       <div class="main-contents">
-        <!-- File Info Section -->
         <div class="file-info" id="file-info" style="display: none">
           Loaded file: <span id="loaded-filename"></span>
           <button class="change-file-btn" id="change-file-btn">
@@ -472,7 +470,6 @@
           </button>
         </div>
 
-        <!-- Parameter Input Section -->
         <div class="section parameter-section">
           <h3 class="section-title">Activation Parameters</h3>
           <div class="parameter-row">
@@ -612,7 +609,6 @@
           <legend>Blacklist</legend>
           <div class="fieldset-area">
             <div class="blacklist-container">
-              <!-- Basic Characters -->
               <div class="blacklist-category">
                 <h4>Basic Characters</h4>
                 <div class="blacklist-options">
@@ -631,7 +627,6 @@
                 </div>
               </div>
 
-              <!-- Common Symbols -->
               <div class="blacklist-category">
                 <h4>Common Symbols</h4>
                 <div class="blacklist-options">
@@ -654,7 +649,6 @@
                 </div>
               </div>
 
-              <!-- Quotes & Dots -->
               <div class="blacklist-category">
                 <h4>Quotes & Dots</h4>
                 <div class="blacklist-options">
@@ -681,7 +675,6 @@
                 </div>
               </div>
 
-              <!-- Brackets & Slashes -->
               <div class="blacklist-category">
                 <h4>Brackets & Slashes</h4>
                 <div class="blacklist-options">
@@ -725,30 +718,22 @@
       </div>
     </footer>
     <script>
-      // [Previous variable declarations remain the same]
-
-      // Improved function to try auto-loading atozkey.js
       function tryAutoLoad() {
-        // Show loading status
         dragDropText.textContent = "Searching for atozkey.js...";
 
-        // Create different ways to try loading the file
         const tryMethods = [
-          // Method 1: Simple fetch from same directory
           () =>
             fetch("atozkey.js").then((response) => {
               if (response.ok) return response.blob();
               throw new Error("Not found");
             }),
 
-          // Method 2: Try with different case (for case-sensitive systems)
           () =>
             fetch("atozKey.js").then((response) => {
               if (response.ok) return response.blob();
               throw new Error("Not found");
             }),
 
-          // Method 3: Try with full path if we're in a subdirectory
           () =>
             fetch(
               window.location.pathname.replace(/\/[^\/]*$/, "/atozkey.js")
@@ -758,11 +743,9 @@
             }),
         ];
 
-        // Try each method sequentially
         let lastError = null;
         const tryNextMethod = (index) => {
           if (index >= tryMethods.length) {
-            // All methods failed
             console.log("All auto-load attempts failed:", lastError);
             dragDropText.textContent =
               "Drag and drop your atozkey.js file here or click to select";
@@ -783,11 +766,9 @@
             });
         };
 
-        // Start trying methods
         tryNextMethod(0);
       }
 
-      // Modified loadFile function to handle errors better
       function loadFile(file) {
         const reader = new FileReader();
 
@@ -805,7 +786,6 @@
           dragDropText.textContent = "File loaded successfully!";
           updateButtonStates();
 
-          // Auto-scroll to show the loaded content
           setTimeout(() => {
             inputCodeArea.scrollIntoView({
               behavior: "smooth",
@@ -822,12 +802,10 @@
         reader.readAsText(file);
       }
 
-      // Global variables
       let originalFileContent = "";
       let currentFileName = "atozkey.js";
       let modifiedContent = "";
 
-      // Set default date to today and time to current time
       const now = new Date();
       document.getElementById("activation-date").valueAsDate = now;
       document.getElementById("activation-time").value = `${now
@@ -835,7 +813,6 @@
         .toString()
         .padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
 
-      // DOM elements
       const dragDropArea = document.getElementById("drag-drop-area");
       const inputCodeArea = document.getElementById("input-code");
       const inputCodeLength = document.getElementById("input-code-length");
@@ -847,7 +824,6 @@
       const runBtn = document.getElementById("run-button");
       const downloadBtn = document.getElementById("download-output-button");
 
-      // Function to enable/disable buttons based on state
       function updateButtonStates() {
         const hasContent = originalFileContent.length > 0;
         const hasRegNumber =
@@ -861,7 +837,6 @@
           document.getElementById("output-code").value.length === 0;
       }
 
-      // Function to load file content
       function loadFile(file) {
         const reader = new FileReader();
         reader.onload = function (e) {
@@ -881,7 +856,6 @@
         reader.readAsText(file);
       }
 
-      // Try to automatically load atozkey.js on page load
       function tryAutoLoad() {
         fetch("atozkey.js")
           .then((response) => {
@@ -904,7 +878,6 @@
           });
       }
 
-      // Setup manual file selection
       function setupManualFileSelection() {
         dragDropArea.addEventListener("dragover", (event) => {
           event.preventDefault();
@@ -951,7 +924,6 @@
         });
       }
 
-      // Change file button handler
       document
         .getElementById("change-file-btn")
         .addEventListener("click", () => {
@@ -973,7 +945,6 @@
           fileInput.click();
         });
 
-      // Generate Script button handler
       scriptBtn.addEventListener("click", () => {
         const regNumber = document.getElementById("reg-number").value;
         const activationDate = document.getElementById("activation-date").value;
@@ -985,15 +956,12 @@
           return;
         }
 
-        // Format the date and time
         const dateParts = activationDate.split("-");
         const timeParts = activationTime.split(":");
         const formattedDateTime = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}T${timeParts[0]}:${timeParts[1]}:00`;
 
-        // Process the original file content
         modifiedContent = originalFileContent;
 
-        // Replace the parameters in the code
         modifiedContent = modifiedContent.replace(
           /"2025-04-02T03:00:00"/g,
           `"${formattedDateTime}"`
@@ -1009,15 +977,12 @@
           `"${regNumber}@neocolab.ai"`
         );
 
-        // Update the input field with modified content
         inputCodeArea.value = modifiedContent;
         inputCodeLength.textContent = modifiedContent.length;
 
-        // Enable obfuscate button
         obfuscateBtn.disabled = false;
       });
 
-      // Obfuscate button handler
       obfuscateBtn.addEventListener("click", () => {
         try {
           const obfuscatedCode = obfuscate(modifiedContent);
@@ -1025,15 +990,12 @@
           document.getElementById("output-code-length").textContent =
             obfuscatedCode.length;
 
-          // Enable run and download buttons
           runBtn.disabled = false;
           downloadBtn.disabled = false;
 
-          // Update download button text with registration number
           const regNumber = document.getElementById("reg-number").value;
           downloadBtn.textContent = `Download as ${regNumber}.js`;
 
-          // Auto-scroll to the output
           document
             .getElementById("output-code")
             .scrollIntoView({ behavior: "smooth" });
@@ -1045,7 +1007,6 @@
         }
       });
 
-      // Download button handler
       downloadBtn.addEventListener("click", () => {
         const outputText = document.getElementById("output-code").value;
         if (!outputText) {
@@ -1074,7 +1035,6 @@
         document.body.removeChild(element);
       }
 
-      // Run button handler
       runBtn.addEventListener("click", () => {
         try {
           eval(document.getElementById("output-code").value);
@@ -1084,7 +1044,6 @@
         }
       });
 
-      // Input validation for registration number
       document
         .getElementById("reg-number")
         .addEventListener("input", function (e) {
@@ -1092,7 +1051,6 @@
           updateButtonStates();
         });
 
-      // Update button states when other fields change
       document
         .getElementById("activation-date")
         .addEventListener("change", updateButtonStates);
@@ -1100,7 +1058,6 @@
         .getElementById("activation-time")
         .addEventListener("change", updateButtonStates);
 
-      // Initialize the page
       tryAutoLoad();
     </script>
   </body>
